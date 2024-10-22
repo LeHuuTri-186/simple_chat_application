@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:llm_demo/model/llama/LlamaModel.dart';
+import 'package:llm_demo/presentation/widget/collapsible_row_tool.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -15,11 +16,11 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final llamaModel = LlamaModel(apiUrl: "http://localhost:3000/v1/chat/completions", apiKey: "");
-  
-  final ChatUser _currentUser = ChatUser(id: '1',
-          firstName: 'Huu Tri',
-          lastName: 'Le');
+  final llamaModel = LlamaModel(
+      apiUrl: "http://localhost:3000/v1/chat/completions", apiKey: "");
+
+  final ChatUser _currentUser =
+      ChatUser(id: '1', firstName: 'Huu Tri', lastName: 'Le');
 
   final ChatUser _gptUser = ChatUser(
     id: '2',
@@ -48,24 +49,45 @@ class _ChatPageState extends State<ChatPage> {
                 ])),
       ),
       body: DashChat(
-          currentUser: _currentUser,
-          typingUsers: _typingUser,
-          messageListOptions:
-            MessageListOptions(
-              scrollPhysics: ScrollPhysics(),
-              scrollController: ScrollController()
-            ),
-          messageOptions:
-              const MessageOptions(
-                textColor: Colors.white,
-                currentUserContainerColor: Colors.black54,
-                containerColor: Colors.black54,
-                currentUserTextColor: Colors.white,
-              ),
-          onSend: (m) {
-            getChatResponse(m);
-          },
-          messages: _messages),
+        currentUser: _currentUser,
+        inputOptions: InputOptions(
+          autocorrect: true,
+          sendOnEnter: true,
+          leading: <Widget>[
+            CollapsibleRowTool(
+              widgets: [
+                CircleAvatar(
+                ),
+                IconButton(
+                  onPressed: () => {},
+                  icon: Icon(Icons.upload_file),
+                  tooltip: "Upload files",
+                ),
+                IconButton(
+                  onPressed: () => {
+                    setState(() {
+                      _messages.clear();
+                    })
+                  },
+                  icon: Icon(Icons.history),
+                  tooltip: "Clear history",
+                ),
+              ],
+            )
+          ],
+        ),
+        typingUsers: _typingUser,
+        scrollToBottomOptions: const ScrollToBottomOptions(),
+        messageListOptions: MessageListOptions(
+            scrollPhysics: const ScrollPhysics(),
+            scrollController: ScrollController()),
+        messageOptions: const MessageOptions(
+        ),
+        onSend: (m) {
+          getChatResponse(m);
+        },
+        messages: _messages,
+      ),
     );
   }
 
@@ -83,20 +105,25 @@ class _ChatPageState extends State<ChatPage> {
       return Messages(role: Role.assistant, content: m.text);
     }).toList();
 
-    final List<Map<String, String>> messageHistory = _messages.reversed.map((msg) {
+    final List<Map<String, String>> messageHistory =
+        _messages.reversed.map((msg) {
       return {
         "role": msg.user == _currentUser ? 'user' : 'assistant',
         "content": msg.text,
       };
     }).toList();
 
-    String messageHistoryString = _messagesHistory.where((m) => m.role == Role.user).map((m) => m.content.toString()).join(". ");
+    String messageHistoryString = _messagesHistory
+        .where((m) => m.role == Role.user)
+        .map((m) => m.content.toString())
+        .join(". ");
 
     try {
       final response = await llamaModel.sendRequest(messageHistory);
 
       setState(() {
-        _messages.insert(0,
+        _messages.insert(
+            0,
             ChatMessage(
               user: _gptUser,
               createdAt: DateTime.now(),
@@ -104,7 +131,7 @@ class _ChatPageState extends State<ChatPage> {
               isMarkdown: true,
             ));
       });
-    } catch(e) {
+    } catch (e) {
       print("error: $e");
     } finally {
       setState(() {
