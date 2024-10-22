@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
+import 'package:llm_demo/model/AiModel.dart';
 
-class LlamaModel {
+class LlamaModel implements AiModel {
   final String apiUrl;
   final String apiKey;
   final String model;
@@ -17,14 +19,20 @@ class LlamaModel {
     this.model = "unsloth/Llama-3.2-1B-Instruct-GGUF",
     this.maxTokens = 2048,
     this.stream = false,
-    this.temperature = 0.7,
+    this.temperature = 1.0,
     this.topP = 1.0,
-    this.frequencyPenalty = 0.0,
+    this.frequencyPenalty = 0.3,
   });
 
+  @override
   Future<String> sendRequest(List<Map<String, String>> messages, {List<String>? stop}) async {
+    final recentHistory = messages.sublist(
+      max(0, messages.length - 3),
+      messages.length,
+    );
+
     final Map<String, dynamic> payload = {
-      "messages": messages,
+      "messages": recentHistory,
       "model": model,
       "max_tokens": maxTokens,
       "stop": stop,

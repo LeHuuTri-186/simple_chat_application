@@ -17,12 +17,11 @@ class _CollapsibleRowToolState extends State<CollapsibleRowTool> {
     if (_isCollapsed) {
       return Row(
             children: [
-              widget.widgets.first,
               IconButton(
                   onPressed: () => setState(() {
                         _isCollapsed = false;
                       }),
-                  icon: Icon(Icons.arrow_left))
+                  icon: Icon(Icons.add_outlined))
             ],
           );
     } else {
@@ -31,7 +30,7 @@ class _CollapsibleRowToolState extends State<CollapsibleRowTool> {
             _isCollapsed = true;
             widget.widgets.removeLast();
           }),
-          icon: Icon(Icons.arrow_right))
+          icon: Icon(Icons.arrow_left))
       );
 
       return Row(children: widget.widgets);
