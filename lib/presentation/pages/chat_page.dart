@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:llm_demo/model/llama/LlamaModel.dart';
 import 'package:llm_demo/presentation/widget/collapsible_row_tool.dart';
+
+import '../../model/openAI/openAIModel.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -119,8 +117,11 @@ class _ChatPageState extends State<ChatPage> {
         .join(". ");
 
     try {
-      final response = await llamaModel.sendRequest(messageHistory);
+      //OpenAI
+      // final openAIBot= new OpenAIModel(apiKey: "");
+      // final response = await openAIBot.callOpenAI(messageHistory);
 
+      final response = await llamaModel.sendRequest(messageHistory);
       setState(() {
         _messages.insert(
             0,
