@@ -23,6 +23,11 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
         child: PopupMenuButton(

@@ -26,6 +26,7 @@ class LlamaModel implements AiModel {
 
   @override
   Future<String> sendRequest(List<Map<String, String>> messages, {List<String>? stop}) async {
+
     final recentHistory = messages.sublist(
       max(0, messages.length - 3),
       messages.length,
